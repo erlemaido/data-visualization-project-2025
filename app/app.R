@@ -72,7 +72,7 @@ server <- function(input, output) {
           "Tehingute arv: ", tehingute_arv
         )
       ), shape = 21, size = 4, color = "black", alpha = 0.85, show.legend = TRUE) +
-      scale_fill_viridis_c(option = "rocket", name = "") +
+      scale_fill_viridis_c(option = "rocket", direction = -1, name = "") +
       scale_color_discrete(name = "") +
       scale_x_continuous(breaks = seq(2004, 2023, by = 2)) +
       labs(x = "Aasta", y = "Palga ja ruutmeetrihinna suhe (%)") +

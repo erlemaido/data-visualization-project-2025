@@ -86,9 +86,9 @@ geom_col(aes(y = palk_ruutmeeter_suhe * skaala_tulpadele, fill = tehingute_arv),
     size = rel(7),
     color = "#2B2B2B"
     ) +
-  geom_line(aes(y = kuupalk, color = "Kuu netopalk"), size = 1) +
+  geom_line(aes(y = kuupalk, color = "Kuu netopalk"), linewidth = 1) +
   geom_point(aes(y = kuupalk, color = "Kuu netopalk"), size = 2) +
-  geom_line(aes(y = mediaan_pinnaühiku_hind_eur_m2, color = "Ruutmeetrihind"), size = 1) +
+  geom_line(aes(y = mediaan_pinnaühiku_hind_eur_m2, color = "Ruutmeetrihind"), linewidth = 1) +
   geom_point(aes(y = mediaan_pinnaühiku_hind_eur_m2, color = "Ruutmeetrihind"), size = 2) +
   scale_fill_gradient(low = "#F0E7DC", high = "#6F5644", name = "Tehingute arv", limits = c(4500, 13500), breaks = c(4500, 13500))+
   scale_color_manual(name = NULL, values = c("Kuu netopalk" = "#3C5533", "Ruutmeetrihind" = "#A34747")) +
@@ -128,7 +128,7 @@ top6_omavalitsused <- df_kombineeritud %>%
 df_top6 <- df_kombineeritud %>% filter(omavalitsus %in% top6_omavalitsused)
 
 p_top6 <- ggplot(df_top6, aes(x = aasta, y = palk_ruutmeeter_suhe)) +
-  geom_line(aes(color = omavalitsus, group = omavalitsus), size = 1) +
+  geom_line(aes(color = omavalitsus, group = omavalitsus), linewidth = 1) +
   geom_point(aes(fill = tehingute_arv), shape = 21, color = "black", size = 2.5, alpha = 0.85) +
   scale_fill_viridis_c(option = "rocket", name = "Tehingute arv") +
   scale_x_continuous(breaks = seq(2004, 2023, by = 2)) +

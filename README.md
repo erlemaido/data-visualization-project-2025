@@ -18,4 +18,4 @@ unistuse oma esimesest kodus üha kättesaamatumale kaugusele.
 
 ## Lisad
 
-Graafikute põhjal koostatud esitlus asub `documents/esitlus.pdf` ja stiilileht `documents/stiilileht.pdf`
+Graafikute põhjal koostatud esitlus asub `documents/Esitlus.pdf` ja stiilileht `documents/Stiilileht.pdf`

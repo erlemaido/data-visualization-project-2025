@@ -1,0 +1,16 @@
+# R session and history files
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio project files (optional, if you're sharing the project)
+.Rproj.user/
+*.Rproj
+
+# Output files from knitting or rendering
+*.html
+*.nb.html
+
+# Cache folders 
+_cache/
+

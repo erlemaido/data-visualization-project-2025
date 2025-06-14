@@ -1,0 +1,152 @@
+---
+title: "Generate Plots"
+output: html_notebook
+---
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+library(sysfonts)
+library(showtext)
+library(scales)
+
+font_add_google("Space Grotesk", "spacegrotesk")
+showtext_auto()
+
+df_kombineeritud <- readRDS("data/df_kombineeritud.rds")
+```
+
+
+## Plot 1: Tehingute arv - Tallinn
+
+```{r}
+df_tallinn <- df_kombineeritud %>% filter(omavalitsus == "Tallinn")
+
+p_tallinn <- ggplot(df_tallinn, aes(x = aasta, y = `tehingute_arv`)) +
+  geom_line(color = "#3C5533") +
+  scale_x_continuous(breaks = seq(2004, 2023, by = 2)) +
+  labs(x = "Aasta", y = "Tehingute arv") +
+  theme_minimal(base_size = 16, base_family = "spacegrotesk") +
+theme(
+  plot.background = element_rect(fill = "#FAF8F5", color = NA),
+  panel.background = element_rect(fill = "#FAF8F5", color = NA),
+  panel.grid.minor.x = element_blank(),
+  axis.text.x = element_text(angle = 45, hjust = 1, size = rel(2.5), color = "#2B2B2B"),
+  axis.text.y = element_text(color = "#2B2B2B", size = rel(2.5)),
+  axis.title = element_text(color = "#2B2B2B"),
+  axis.title.x = element_text(color = "#2B2B2B", size = rel(3), margin = margin(t = 10)),
+  axis.title.y = element_text(color = "#2B2B2B", size = rel(3), margin = margin(r = 10)),
+  plot.margin = margin(20, 20, 20, 20)
+)
+
+ggsave("plots/tehingute_arv_tallinn.png", plot = p_tallinn, width = 12, height = 6, dpi = 300, bg = "#FAF8F5")
+```
+
+## Plot 2: Tehingute arv – Harjumaa (v.a. Tallinn)
+
+```{r}
+df_harjumaa <- df_kombineeritud %>% filter(omavalitsus != "Tallinn")
+
+y_min_other <- min(df_harjumaa$tehingute_arv, na.rm = TRUE)
+y_max_other <- max(df_harjumaa$tehingute_arv, na.rm = TRUE)
+
+p_harjumaa <- ggplot(df_harjumaa, aes(x = aasta, y = tehingute_arv, group = omavalitsus)) +
+  geom_line(color = "#3C5533") +
+  facet_wrap(~ omavalitsus, scales = "fixed", nrow = 3, ncol = 5) +
+  scale_x_continuous(breaks = seq(2004, 2023, by = 4)) +
+  ylim(y_min_other, y_max_other) +
+  labs(x = "Aasta", y = "Tehingute arv") +
+  theme_minimal(base_size = 32, base_family = "spacegrotesk") +
+  theme(
+    plot.background = element_rect(fill = "#FAF8F5", color = NA),
+    panel.background = element_rect(fill = "#FAF8F5", color = NA),
+    panel.grid.minor.x = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(1), color = "#2B2B2B"),
+    axis.text.y = element_text(color = "#2B2B2B", size = rel(1)),
+    axis.title = element_text(color = "#2B2B2B"),
+  axis.title.x = element_text(color = "#2B2B2B", size = rel(1.5), margin = margin(t = 10) ),
+  axis.title.y = element_text(color = "#2B2B2B", size = rel(1.5), margin = margin(r = 10))
+)
+
+ggsave("plots/tehingute_arv_harjumaa.png", plot = p_harjumaa, width = 12, height = 6, dpi = 300, bg = "#FAF8F5")
+```
+
+## Plot 3: Keskmise palga ja ruutmeetrihinna suhe Tallinnas
+
+```{r}
+df_tallinn <- df_kombineeritud %>% filter(omavalitsus == "Tallinn")
+
+skaala_tulpadele <- 30
+
+p_tallinn_suhe <- ggplot(df_tallinn, aes(x = aasta)) +
+geom_col(aes(y = palk_ruutmeeter_suhe * skaala_tulpadele, fill = tehingute_arv), width = 0.6) +
+  geom_text(
+    aes(y = palk_ruutmeeter_suhe * skaala_tulpadele, label = paste0(round(palk_ruutmeeter_suhe), "%")),
+    vjust = -0.5,
+    size = rel(7),
+    color = "#2B2B2B"
+    ) +
+  geom_line(aes(y = kuupalk, color = "Kuu netopalk"), size = 1) +
+  geom_point(aes(y = kuupalk, color = "Kuu netopalk"), size = 2) +
+  geom_line(aes(y = mediaan_pinnaühiku_hind_eur_m2, color = "Ruutmeetrihind"), size = 1) +
+  geom_point(aes(y = mediaan_pinnaühiku_hind_eur_m2, color = "Ruutmeetrihind"), size = 2) +
+  scale_fill_gradient(low = "#F0E7DC", high = "#6F5644", name = "Tehingute arv", limits = c(4500, 13500), breaks = c(4500, 13500))+
+  scale_color_manual(name = NULL, values = c("Kuu netopalk" = "#3C5533", "Ruutmeetrihind" = "#A34747")) +
+  scale_x_continuous(breaks = seq(2004, 2023, by = 2)) +
+  labs(x = "Aasta", y = "Euro, €") +
+  theme_minimal(base_size = 16, base_family = "spacegrotesk") +
+  theme(
+    plot.background = element_rect(fill = "#FAF8F5", color = NA),
+    panel.background = element_rect(fill = "#FAF8F5", color = NA),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(2.5), color = "#2B2B2B"),
+    axis.text.y = element_text(color = "#2B2B2B", size = rel(2.5)),
+    axis.title = element_text(color = "#2B2B2B"),
+    axis.title.x = element_text(color = "#2B2B2B", size = rel(3), margin = margin(t = 10)),
+    axis.title.y = element_text(color = "#2B2B2B", size = rel(3), margin = margin(r = 10)),
+    axis.text.y.right = element_blank(),
+    axis.ticks.y.right = element_blank(),
+    axis.title.y.right = element_blank(),
+    legend.title = element_text(color = "#2B2B2B", size = rel(2)),
+    legend.text = element_text(color = "#2B2B2B", size = rel(2)),
+    legend.position = "bottom",
+    plot.margin = margin(20, 20, 20, 20)
+    )
+
+ggsave("plots/taskukohasus_tallinn.png", plot = p_tallinn_suhe, width = 12, height = 6, dpi = 300, bg = "#FAF8F5")
+```
+
+
+## Plot 4: Taskukohasus – top 6 omavalitsust
+
+```{r}
+top6_omavalitsused <- df_kombineeritud %>%
+  filter(aasta == 2023) %>%
+  arrange(desc(tehingute_arv)) %>%
+  slice_head(n = 6) %>%
+  pull(omavalitsus)
+
+df_top6 <- df_kombineeritud %>% filter(omavalitsus %in% top6_omavalitsused)
+
+p_top6 <- ggplot(df_top6, aes(x = aasta, y = palk_ruutmeeter_suhe)) +
+  geom_line(aes(color = omavalitsus, group = omavalitsus), size = 1) +
+  geom_point(aes(fill = tehingute_arv), shape = 21, color = "black", size = 2.5, alpha = 0.85) +
+  scale_fill_viridis_c(option = "rocket", name = "Tehingute arv") +
+  scale_x_continuous(breaks = seq(2004, 2023, by = 2)) +
+  labs(x = "Aasta", y = "Palga ja ruutmeetrihinna suhe (%)", color = "Omavalitsus") +
+  theme_minimal(base_size = 16, base_family = "spacegrotesk") +
+  theme(
+    plot.background = element_rect(fill = "#FAF8F5", color = NA),
+    panel.background = element_rect(fill = "#FAF8F5", color = NA),
+    legend.background = element_rect(fill = "#FAF8F5", color = NA),
+    legend.key = element_rect(fill = "#FAF8F5", color = NA),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(2.5), color = "#2B2B2B"),
+    axis.text.y = element_text(color = "#2B2B2B", size = rel(2.5)),
+    axis.title.x = element_text(color = "#2B2B2B", size = rel(2.5), margin = margin(t = 10)),
+    axis.title.y = element_text(color = "#2B2B2B", size = rel(2.5), margin = margin(r = 10)),
+    legend.text = element_text(color = "#2B2B2B", size = rel(2)),
+    legend.title = element_text(color = "#2B2B2B", size = rel(2.5)),
+  )
+
+ggsave(
+  "plots/taskukohasus_top6_2023.png", plot = p_top6, width = 12, height = 6, dpi = 300, bg = "#FAF8F5")
+```
